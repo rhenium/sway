@@ -1085,6 +1085,13 @@ void sway_keyboard_configure(struct sway_keyboard *keyboard) {
 		}
 	}
 
+	// If the seat has no active keyboard, set this one
+	struct wlr_seat *seat = keyboard->seat_device->sway_seat->wlr_seat;
+	struct wlr_keyboard *current_keyboard = seat->keyboard_state.keyboard;
+	if (current_keyboard == NULL) {
+		wlr_seat_set_keyboard(seat, wlr_device);
+	}
+
 	wl_list_remove(&keyboard->keyboard_key.link);
 	wl_signal_add(&wlr_device->keyboard->events.key, &keyboard->keyboard_key);
 	keyboard->keyboard_key.notify = handle_keyboard_key;
